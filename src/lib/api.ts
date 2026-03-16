@@ -30,30 +30,3 @@ export async function apiRequest<T>(
 
   return res.json() as Promise<T>;
 }
-
-export async function apiStream(
-  endpoint: string,
-  body: unknown
-): Promise<ReadableStream<Uint8Array>> {
-  const apiKey = requireApiKey();
-
-  const res = await fetch(`${BASE_URL}${endpoint}`, {
-    method: "POST",
-    headers: {
-      "X-API-Key": apiKey,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(body),
-  });
-
-  if (!res.ok) {
-    const text = await res.text().catch(() => "");
-    throw new Error(`API error ${res.status}: ${text || res.statusText}`);
-  }
-
-  if (!res.body) {
-    throw new Error("No response body for streaming");
-  }
-
-  return res.body;
-}

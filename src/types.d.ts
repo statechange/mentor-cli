@@ -1,4 +1,6 @@
 declare module "marked-terminal" {
-  const renderer: unknown;
-  export default renderer;
+  class TerminalRenderer {
+    constructor(options?: Record<string, unknown>);
+  }
+  export default TerminalRenderer;
 }

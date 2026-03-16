@@ -2,12 +2,22 @@ import { Command } from "commander";
 import { apiRequest } from "../lib/api.js";
 import { renderMarkdown, colors, formatError, printJson } from "../lib/format.js";
 
-interface Resource {
+interface ResourceListItem {
   id: string;
   title: string;
-  type?: string;
-  description?: string;
-  content?: string;
+  resourceType: string;
+  description: string;
+  modelCount: number;
+}
+
+interface ResourceDetail {
+  id: string;
+  resource_type: string;
+  title: string;
+  summary: string;
+  markdown: string;
+  transcript: string;
+  connected_models: Array<{ model_id: string; model_label: string }>;
 }
 
 export const resourcesCommand = new Command("resources")
@@ -15,23 +25,26 @@ export const resourcesCommand = new Command("resources")
   .option("--json", "Output raw JSON")
   .action(async (options: { json?: boolean }) => {
     try {
-      const resources = await apiRequest<Resource[]>("/resources");
+      const resources = await apiRequest<ResourceListItem[]>("/resources");
 
       if (options.json) {
         printJson(resources);
         return;
       }
 
-      console.log(colors.bold("Resources:\n"));
+      console.log(colors.bold(`Resources (${resources.length}):\n`));
       for (const r of resources) {
-        const type = r.type || "resource";
+        const type = r.resourceType || "resource";
         const colorFn =
           type === "session"
             ? colors.session
             : type === "essay"
               ? colors.essay
               : colors.resource;
-        console.log(`  ${colorFn(`[${type}]`)} ${r.title} ${colors.dim(`(${r.id})`)}`);
+        const models = r.modelCount
+          ? colors.dim(`(${r.modelCount} models)`)
+          : "";
+        console.log(`  ${colorFn(`[${type}]`)} ${r.title} ${colors.dim(`(${r.id})`)} ${models}`);
       }
     } catch (err) {
       formatError((err as Error).message);
@@ -45,7 +58,7 @@ export const resourceCommand = new Command("resource")
   .option("--json", "Output raw JSON")
   .action(async (id: string, options: { json?: boolean }) => {
     try {
-      const resource = await apiRequest<Resource>(
+      const resource = await apiRequest<ResourceDetail>(
         `/resources/${encodeURIComponent(id)}`
       );
 
@@ -54,7 +67,7 @@ export const resourceCommand = new Command("resource")
         return;
       }
 
-      const type = resource.type || "resource";
+      const type = resource.resource_type || "resource";
       const colorFn =
         type === "session"
           ? colors.session
@@ -63,12 +76,23 @@ export const resourceCommand = new Command("resource")
             : colors.resource;
 
       console.log(`${colorFn(`[${type}]`)} ${colors.bold(resource.title)}`);
-      if (resource.content) {
-        console.log();
-        console.log(renderMarkdown(resource.content));
-      } else if (resource.description) {
-        console.log();
-        console.log(resource.description);
+
+      if (resource.connected_models?.length) {
+        console.log(
+          colors.dim(
+            `Models: ${resource.connected_models.map((m) => m.model_label).join(", ")}`
+          )
+        );
+      }
+
+      console.log();
+
+      if (resource.markdown) {
+        console.log(renderMarkdown(resource.markdown));
+      } else if (resource.summary) {
+        console.log(resource.summary);
+      } else if (resource.transcript) {
+        console.log(resource.transcript);
       }
     } catch (err) {
       formatError((err as Error).message);

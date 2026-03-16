@@ -1,14 +1,14 @@
 import chalk from "chalk";
-import { Marked } from "marked";
+import { marked } from "marked";
 import TerminalRenderer from "marked-terminal";
 
-const marked = new Marked(TerminalRenderer as never);
+marked.setOptions({ renderer: new TerminalRenderer() as never });
 
 const noColor = !!process.env["NO_COLOR"];
 
 export function renderMarkdown(text: string): string {
   if (noColor) return text;
-  return marked.parse(text) as string;
+  return marked(text) as string;
 }
 
 export const colors = {

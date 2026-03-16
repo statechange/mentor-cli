@@ -1,6 +1,6 @@
 # @statechange/mentor
 
-State Change's 25 years of building experience, right in your terminal. Search the knowledge base, explore mental models, and chat with SC Mentor — without leaving your flow.
+State Change's 25 years of building experience, right in your terminal. Search the knowledge base, explore mental models, and browse resources — without leaving your flow.
 
 ## Install
 
@@ -49,14 +49,6 @@ mentor search "build vs buy"
 
 Returns relevant resources and mental models. Add `--json` for machine-readable output.
 
-### Chat interactively
-
-```bash
-mentor chat
-```
-
-Opens a conversational session with SC Mentor. Ask follow-up questions, explore ideas, and get advice — all streamed to your terminal. `Ctrl+C` to exit.
-
 ### Look up mental models
 
 List all available models:
@@ -65,10 +57,11 @@ List all available models:
 mentor model
 ```
 
-View a specific model:
+View a specific model by ID or number:
 
 ```bash
-mentor model "Jobs to Be Done"
+mentor model mm-70
+mentor model 70
 ```
 
 ### Browse resources
@@ -82,16 +75,16 @@ mentor resources
 View a specific resource:
 
 ```bash
-mentor resource <id>
+mentor resource essay-132
 ```
 
 ### JSON output
 
-All read commands support `--json` for piping to other tools:
+All commands support `--json` for piping to other tools:
 
 ```bash
-mentor search "pricing" --json | jq '.results[0]'
-mentor model "JTBD" --json
+mentor search "pricing" --json | jq '.resources[0]'
+mentor model 70 --json
 mentor resources --json
 ```
 
