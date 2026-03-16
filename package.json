@@ -1,0 +1,42 @@
+{
+  "name": "@statechange/mentor",
+  "version": "0.1.0",
+  "description": "CLI for State Change Mentor — search knowledge, chat, and explore mental models from your terminal",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "bin": {
+    "mentor": "dist/cli.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "start": "node dist/cli.js"
+  },
+  "keywords": [
+    "statechange",
+    "mentor",
+    "cli",
+    "saas",
+    "mental-models"
+  ],
+  "author": "State Change",
+  "license": "MIT",
+  "files": [
+    "dist"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "chalk": "^5.6.2",
+    "commander": "^14.0.3",
+    "marked": "^15.0.12",
+    "marked-terminal": "^7.3.0",
+    "open": "^11.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^25.5.0",
+    "typescript": "^5.9.3"
+  }
+}

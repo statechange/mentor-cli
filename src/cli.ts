@@ -1,0 +1,26 @@
+#!/usr/bin/env node
+
+import { Command } from "commander";
+import { loginCommand } from "./commands/login.js";
+import { logoutCommand } from "./commands/logout.js";
+import { searchCommand } from "./commands/search.js";
+import { chatCommand } from "./commands/chat.js";
+import { modelCommand } from "./commands/model.js";
+import { resourcesCommand, resourceCommand } from "./commands/resources.js";
+
+const program = new Command();
+
+program
+  .name("mentor")
+  .description("SC Mentor — State Change knowledge base in your terminal")
+  .version("0.1.0");
+
+program.addCommand(loginCommand);
+program.addCommand(logoutCommand);
+program.addCommand(searchCommand);
+program.addCommand(chatCommand);
+program.addCommand(modelCommand);
+program.addCommand(resourcesCommand);
+program.addCommand(resourceCommand);
+
+program.parse();
