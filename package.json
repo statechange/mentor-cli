@@ -1,6 +1,6 @@
 {
   "name": "@statechange/mentor",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "CLI for State Change Mentor — search knowledge, chat, and explore mental models from your terminal",
   "type": "module",
   "main": "dist/index.js",
