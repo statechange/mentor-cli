@@ -31,12 +31,14 @@ interface SearchResponse {
 export const searchCommand = new Command("search")
   .description("Search the SC Mentor knowledge base")
   .argument("<query>", "Search query")
+  .option("--top <n>", "Max results per category (1-20)", "5")
   .option("--json", "Output raw JSON")
-  .action(async (query: string, options: { json?: boolean }) => {
+  .action(async (query: string, options: { top?: string; json?: boolean }) => {
     try {
+      const top_k = Math.min(Math.max(1, Number(options.top ?? 5) || 5), 20);
       const data = await apiRequest<SearchResponse>("/retrieve", {
         method: "POST",
-        body: { query },
+        body: { query, top_k },
       });
 
       if (options.json) {
