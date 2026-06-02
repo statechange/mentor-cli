@@ -13,6 +13,7 @@ import { historyCommand } from "./commands/history.js";
 import { contextCommand } from "./commands/context.js";
 import { compareCommand } from "./commands/compare.js";
 import { sharpenCommand } from "./commands/sharpen.js";
+import { whoamiCommand } from "./commands/whoami.js";
 
 const pkgPath = resolve(dirname(fileURLToPath(import.meta.url)), "../package.json");
 const pkg = JSON.parse(readFileSync(pkgPath, "utf8")) as { version: string };
@@ -26,6 +27,7 @@ program
 
 program.addCommand(loginCommand);
 program.addCommand(logoutCommand);
+program.addCommand(whoamiCommand);
 program.addCommand(searchCommand);
 program.addCommand(modelCommand);
 program.addCommand(modelsCommand);

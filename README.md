@@ -32,6 +32,21 @@ mentor login --token <your-api-key>
 
 Your credentials are stored in `~/.statechange/auth.json` (shared with other State Change CLI tools).
 
+### Check your status
+
+```bash
+mentor whoami        # or: mentor status
+```
+
+Reports whether you're signed in, where the key came from (`$STATECHANGE_API_KEY`
+or `~/.statechange/auth.json`), and validates it against the live server. Exits
+non-zero if you're not authenticated or the key was rejected.
+
+```bash
+mentor whoami --offline   # local key check only, no network — fully portable
+mentor whoami --json      # machine-readable, for scripts and skill gates
+```
+
 ### Log out
 
 ```bash
