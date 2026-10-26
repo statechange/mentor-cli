@@ -22,13 +22,17 @@ npx @statechange/mentor search "how to price my SaaS"
 mentor login
 ```
 
-This opens your browser to authenticate via State Change. Once you approve, you're all set.
-
-If you prefer, you can paste an API key manually:
+For a new login, this shows the [Mentor API key page](https://mentor.statechange.ai/connect/keys)
+and opens it in your browser when run interactively. Sign in, create a key, then
+paste it into the command below to finish logging in:
 
 ```bash
 mentor login --token <your-api-key>
+mentor whoami
 ```
+
+The saved key is validated by `mentor whoami` against `https://mentor.statechange.ai/api`.
+Existing keys continue to work; login no longer uses Xano.
 
 Your credentials are stored in `~/.statechange/auth.json` (shared with other State Change CLI tools).
 
