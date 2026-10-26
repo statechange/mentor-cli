@@ -1,82 +1,41 @@
 import { Command } from "commander";
-import { exec } from "node:child_process";
-import {
-  loadAuth,
-  saveAuth,
-  getAuthFilePath,
-  requestDeviceCode,
-  pollForToken,
-  createApiKey,
-} from "../lib/auth.js";
+import open from "open";
+import { loadAuth, saveAuth, getAuthFilePath } from "../lib/auth.js";
+import { API_KEYS_URL } from "../lib/urls.js";
 import { colors } from "../lib/format.js";
 
-function openUrl(url: string): void {
-  const cmd =
-    process.platform === "darwin"
-      ? `open "${url}"`
-      : process.platform === "win32"
-        ? `start "${url}"`
-        : `xdg-open "${url}"`;
-  exec(cmd, () => {});
-}
-
 export const loginCommand = new Command("login")
-  .description("Authenticate with SC Mentor")
-  .option("--token <token>", "API key (skip device flow)")
+  .description("Authenticate with an API key from SC Mentor")
+  .option("--token <token>", "Save an API key from the Mentor key page")
   .action(async (options: { token?: string }) => {
-    // Manual token mode
     if (options.token) {
       saveAuth({ apiKey: options.token });
-      console.log(colors.bold("Authenticated successfully."));
+      console.log(colors.bold("API key saved."));
       console.log(colors.dim(`  Saved to ${getAuthFilePath()}`));
+      console.log("Run `mentor whoami` to validate it against the server.");
       return;
     }
 
-    // Check if already logged in
-    const existing = loadAuth();
-    if (existing) {
-      console.log("Already authenticated. Run `mentor logout` first, or use --token to override.");
+    if (loadAuth()) {
+      console.log("An API key is already saved. Run `mentor whoami` to check it.");
+      console.log("Use `mentor login --token <your-api-key>` to replace it.");
       return;
     }
 
-    // Device flow
-    try {
-      const { device_code, user_code, verification_uri, interval } =
-        await requestDeviceCode();
+    console.log("Sign in to Mentor and create an API key:");
+    console.log(`  ${API_KEYS_URL}`);
+    console.log("");
+    console.log("Then save the key in your terminal:");
+    console.log("  mentor login --token <your-api-key>");
+    console.log("  mentor whoami");
+    console.log("");
+    console.log("Login completes after you save the key. Keep your API key private.");
 
-      const browserUrl = `${verification_uri}?code=${encodeURIComponent(user_code)}`;
-
-      console.log("");
-      console.log("  Opening browser to authenticate...");
-      console.log("");
-      console.log(`    ${browserUrl}`);
-      console.log("");
-      console.log(`  Code: ${colors.bold(user_code)}`);
-      console.log("");
-
-      openUrl(browserUrl);
-      console.log(colors.dim("  (Browser opened automatically)"));
-      console.log("");
-      process.stdout.write("  Waiting for authorization...");
-
-      const authToken = await pollForToken(device_code, interval);
-      process.stdout.write(" done!\n");
-
-      console.log("  Creating API key...");
-      const apiKey = await createApiKey(authToken);
-
-      saveAuth({ apiKey });
-      console.log("");
-      console.log(colors.bold(`  Authenticated! API key saved to ${getAuthFilePath()}`));
-      console.log("");
-      console.log("  You're all set! Try running:");
-      console.log('    mentor search "how to price my SaaS"');
-      console.log("");
-    } catch (err) {
-      console.error("");
-      console.error(colors.error(`  ${(err as Error).message}`));
-      console.error("  You can also authenticate manually:");
-      console.error("    mentor login --token <your-api-key>");
-      process.exit(1);
+    if (process.stdout.isTTY) {
+      try {
+        await open(API_KEYS_URL);
+      } catch {
+        console.log("Open the link above in your browser to continue.");
+      }
     }
   });

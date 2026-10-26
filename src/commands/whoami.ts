@@ -2,7 +2,7 @@ import { Command } from "commander";
 import { getAuthFilePath, loadAuth } from "../lib/auth.js";
 import { colors, printJson } from "../lib/format.js";
 
-const BASE_URL = "https://mentor.statechange.ai/api";
+import { API_URL } from "../lib/urls.js";
 
 type Source = "env" | "file" | null;
 
@@ -52,7 +52,7 @@ interface LiveResult {
  */
 async function validateLive(key: string): Promise<LiveResult> {
   try {
-    const res = await fetch(`${BASE_URL}/mcp-tools`, {
+    const res = await fetch(`${API_URL}/mcp-tools`, {
       headers: { "X-API-Key": key },
     });
     return { ok: res.ok, status: res.status, reachable: true };

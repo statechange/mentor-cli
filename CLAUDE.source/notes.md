@@ -1,0 +1,3 @@
+# Setup and runtime guidance
+
+2026-10-26T22:21:10Z — Implementation finding for statechange/mentor-cli#6 and PR #5: CLAUDE.md describes the retired sc-mentor.fly.dev API and Xano device login. The 0.4.1 release uses mentor.statechange.ai/api and directs users to /connect/keys followed by `mentor login --token`. Reconsider the whole file against the shipped CLI, including the commands it now exposes and the new `npm test` build-plus-CLI regression checks. This is the implementing agent's finding, not an owner ruling. The follow-up issue carries this note; CLAUDE.md remains unchanged until reconsideration.

@@ -1,6 +1,6 @@
 import { requireApiKey } from "./auth.js";
 
-const BASE_URL = "https://mentor.statechange.ai/api";
+import { API_URL } from "./urls.js";
 
 interface RequestOptions {
   method?: string;
@@ -14,7 +14,7 @@ export async function apiRequest<T>(
   const { method = "GET", body } = options;
   const apiKey = requireApiKey();
 
-  const res = await fetch(`${BASE_URL}${endpoint}`, {
+  const res = await fetch(`${API_URL}${endpoint}`, {
     method,
     headers: {
       "X-API-Key": apiKey,

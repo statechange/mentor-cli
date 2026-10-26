@@ -5,8 +5,6 @@ import os from "node:os";
 const AUTH_DIR = path.join(os.homedir(), ".statechange");
 const AUTH_FILE = path.join(AUTH_DIR, "auth.json");
 
-const SCKEYS_URL = "https://api.statechange.ai/api:sckeys";
-
 interface AuthConfig {
   apiKey: string;
   authToken?: string;
@@ -59,86 +57,4 @@ export function requireApiKey(): string {
     process.exit(1);
   }
   return key;
-}
-
-// --- Device Flow ---
-
-function sleep(ms: number): Promise<void> {
-  return new Promise((r) => setTimeout(r, ms));
-}
-
-interface DeviceCodeResponse {
-  device_code: string;
-  user_code: string;
-  verification_uri: string;
-  expires_in: number;
-  interval: number;
-}
-
-export async function requestDeviceCode(): Promise<DeviceCodeResponse> {
-  const res = await fetch(`${SCKEYS_URL}/device/code`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-  });
-
-  if (!res.ok) {
-    const text = await res.text();
-    throw new Error(`Failed to start login flow: ${res.status} ${text}`);
-  }
-
-  return res.json() as Promise<DeviceCodeResponse>;
-}
-
-export async function pollForToken(deviceCode: string, interval: number): Promise<string> {
-  const pollMs = (interval || 5) * 1000;
-
-  while (true) {
-    await sleep(pollMs);
-
-    const res = await fetch(`${SCKEYS_URL}/device/token`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ device_code: deviceCode }),
-    });
-
-    if (!res.ok) {
-      if (res.status === 404) {
-        throw new Error("Device code expired. Please try again.");
-      }
-      const text = await res.text();
-      throw new Error(`Polling error: ${res.status} ${text}`);
-    }
-
-    const result = (await res.json()) as { status: string; api_key?: string };
-
-    if (result.status === "complete" && result.api_key) {
-      return result.api_key; // This is the auth token
-    }
-
-    // Still pending
-    process.stdout.write(".");
-  }
-}
-
-export async function createApiKey(authToken: string): Promise<string> {
-  const res = await fetch(`${SCKEYS_URL}/keys`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${authToken}`,
-    },
-    body: JSON.stringify({
-      name: "Mentor CLI (device flow)",
-      description: `Created via mentor login on ${new Date().toISOString().split("T")[0]}`,
-      type: "cli",
-    }),
-  });
-
-  if (!res.ok) {
-    const text = await res.text();
-    throw new Error(`Failed to create API key: ${res.status} ${text}`);
-  }
-
-  const data = (await res.json()) as { key: string };
-  return data.key;
 }
