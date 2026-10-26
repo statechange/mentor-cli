@@ -1,13 +1,14 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import { spawnSync } from 'node:child_process';
-import { mkdirSync, mkdtempSync, readFileSync, existsSync, statSync } from 'node:fs';
+import { mkdirSync, mkdtempSync, readFileSync, existsSync, statSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 
 const scratch = path.resolve('.graveyard/test-homes');
 mkdirSync(scratch, { recursive: true });
-function cli(args, extraEnv = {}, preload = false) {
+function cli(args, extraEnv = {}, preload = false, prepare) {
   const home = mkdtempSync(path.join(scratch, 'login-'));
+  prepare?.(home);
   const result = spawnSync(process.execPath, [
     ...(preload ? ['--import', './test/mentor-server.mjs'] : []),
     'dist/cli.js', ...args,
@@ -57,4 +58,20 @@ test('whoami rejects an invalid key', () => {
   const result = cli(['whoami', '--json'], { STATECHANGE_API_KEY: 'invalid-fixture' }, true);
   assert.equal(result.status, 1);
   assert.equal(JSON.parse(result.stdout).reason, 'rejected');
+});
+
+
+test('replacing a key preserves shared auth fields and corrects existing file permissions', () => {
+  const result = cli(['login', '--token', 'replacement-key'], {}, false, (home) => {
+    mkdirSync(path.join(home, '.statechange'));
+    writeFileSync(path.join(home, '.statechange/auth.json'), JSON.stringify({
+      apiKey: 'previous-key', authToken: 'shared-token', authTokenExpires: 12345,
+    }), { mode: 0o644 });
+  });
+  assert.equal(result.status, 0, result.stderr);
+  const authPath = path.join(result.home, '.statechange/auth.json');
+  assert.deepEqual(JSON.parse(readFileSync(authPath, 'utf8')), {
+    apiKey: 'replacement-key', authToken: 'shared-token', authTokenExpires: 12345,
+  });
+  if (process.platform !== 'win32') assert.equal(statSync(authPath).mode & 0o777, 0o600);
 });

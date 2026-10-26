@@ -1,7 +1,7 @@
 {
   "name": "@statechange/mentor",
   "version": "0.4.1",
-  "description": "CLI for State Change Mentor \u2014 search knowledge, chat, and explore mental models from your terminal",
+  "description": "CLI for State Change Mentor — search knowledge, chat, and explore mental models from your terminal",
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -28,7 +28,7 @@
     "dist"
   ],
   "engines": {
-    "node": ">=18"
+    "node": ">=20"
   },
   "dependencies": {
     "chalk": "^5.6.2",

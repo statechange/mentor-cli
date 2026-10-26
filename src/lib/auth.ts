@@ -25,8 +25,15 @@ export function loadAuth(): AuthConfig | null {
 }
 
 export function saveAuth(config: AuthConfig): void {
+  const updated = { ...loadAuth(), ...config };
   fs.mkdirSync(AUTH_DIR, { recursive: true });
-  fs.writeFileSync(AUTH_FILE, JSON.stringify(config, null, 2), { mode: 0o600 });
+  const fd = fs.openSync(AUTH_FILE, "w", 0o600);
+  try {
+    fs.fchmodSync(fd, 0o600);
+    fs.writeFileSync(fd, JSON.stringify(updated, null, 2));
+  } finally {
+    fs.closeSync(fd);
+  }
 }
 
 export function clearAuth(): void {

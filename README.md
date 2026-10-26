@@ -22,7 +22,7 @@ npx @statechange/mentor search "how to price my SaaS"
 mentor login
 ```
 
-This shows the [Mentor API key page](https://mentor.statechange.ai/connect/keys)
+For a new login, this shows the [Mentor API key page](https://mentor.statechange.ai/connect/keys)
 and opens it in your browser when run interactively. Sign in, create a key, then
 paste it into the command below to finish logging in:
 
