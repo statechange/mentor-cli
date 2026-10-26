@@ -2,7 +2,7 @@ import { Command } from "commander";
 import { getAuthFilePath, loadAuth } from "../lib/auth.js";
 import { colors, printJson } from "../lib/format.js";
 
-const BASE_URL = "https://sc-mentor.fly.dev/api";
+const BASE_URL = "https://mentor.statechange.ai/api";
 
 type Source = "env" | "file" | null;
 

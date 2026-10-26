@@ -1,6 +1,6 @@
 import { requireApiKey } from "./auth.js";
 
-const BASE_URL = "https://sc-mentor.fly.dev/api";
+const BASE_URL = "https://mentor.statechange.ai/api";
 
 interface RequestOptions {
   method?: string;
